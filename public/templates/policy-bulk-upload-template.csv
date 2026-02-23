@@ -1,0 +1,12 @@
+Policy Number,Customer Name,Customer Type,Policy Type,Premium Amount,Start Date,End Date,Status,Agent ID,Notes
+POL-001,John Doe,Individual,Life Insurance,50000,2024-01-01,2025-01-01,Active,AGT-001,Sample policy
+POL-002,Jane Smith,Corporate,Health Insurance,75000,2024-01-15,2025-01-15,Active,AGT-002,Corporate policy
+POL-003,Bob Johnson,Individual,Motor Insurance,25000,2024-02-01,2025-02-01,Active,AGT-001,Motor insurance policy
+
+
+
+
+
+
+
+

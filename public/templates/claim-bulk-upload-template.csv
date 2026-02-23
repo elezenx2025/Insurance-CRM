@@ -1,0 +1,12 @@
+Claim Number,Policy Number,Customer Name,Claim Type,Claim Amount,Incident Date,Claim Date,Status,Agent ID,Description
+CLM-001,POL-001,John Doe,Accident,25000,2024-01-15,2024-01-20,Pending,AGT-001,Vehicle accident claim
+CLM-002,POL-002,Jane Smith,Medical,15000,2024-01-20,2024-01-25,Approved,AGT-002,Hospitalization claim
+CLM-003,POL-003,Bob Johnson,Property,30000,2024-02-01,2024-02-05,Processing,AGT-001,Property damage claim
+
+
+
+
+
+
+
+

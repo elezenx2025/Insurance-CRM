@@ -1,0 +1,12 @@
+Lead ID,First Name,Last Name,Email,Phone,Lead Type,Source,Status,Priority,Agent ID,Notes,Follow-up Date
+LEAD-001,Alice,Brown,alice.brown@email.com,9876543213,Individual,Website,New,High,AGT-001,Interested in life insurance,2024-01-25
+LEAD-002,Charlie,Wilson,charlie.wilson@company.com,9876543214,Corporate,Referral,Qualified,Medium,AGT-002,Corporate health insurance,2024-01-30
+LEAD-003,Diana,Davis,diana.davis@email.com,9876543215,Individual,Cold Call,Contacted,Low,AGT-001,Motor insurance inquiry,2024-02-05
+
+
+
+
+
+
+
+

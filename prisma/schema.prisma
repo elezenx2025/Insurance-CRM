@@ -1,0 +1,270 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Master Data Tables for Dynamic Field Management
+
+model MasterField {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  displayName String
+  type        String   // 'dropdown', 'text', 'number', 'date', 'boolean', 'multiselect'
+  category    String   // 'customer', 'agent', 'policy', 'claim', 'training', 'report'
+  isRequired  Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  description String?
+  validation  String?  // JSON string for validation rules
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  options     FieldOption[]
+  values      FieldValue[]
+  
+  @@map("master_fields")
+}
+
+model FieldOption {
+  id        String     @id @default(cuid())
+  fieldId   String
+  value     String
+  label     String
+  sortOrder Int        @default(0)
+  isActive  Boolean    @default(true)
+  createdAt DateTime   @default(now())
+  
+  field     MasterField @relation(fields: [fieldId], references: [id], onDelete: Cascade)
+  
+  @@map("field_options")
+}
+
+model FieldValue {
+  id        String   @id @default(cuid())
+  fieldId   String
+  recordId  String   // ID of the record this value belongs to
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  field     MasterField @relation(fields: [fieldId], references: [id], onDelete: Cascade)
+  
+  @@map("field_values")
+}
+
+// Country, State, City, Pincode Master Data
+model Country {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  code      String   @unique
+  phoneCode String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  states    State[]
+  
+  @@map("countries")
+}
+
+model State {
+  id        String   @id @default(cuid())
+  countryId String
+  name      String
+  code      String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  country   Country @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  cities    City[]
+  
+  @@unique([countryId, name])
+  @@map("states")
+}
+
+model City {
+  id        String   @id @default(cuid())
+  stateId   String
+  name      String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  state     State @relation(fields: [stateId], references: [id], onDelete: Cascade)
+  pincodes  Pincode[]
+  
+  @@unique([stateId, name])
+  @@map("cities")
+}
+
+model Pincode {
+  id        String   @id @default(cuid())
+  cityId    String
+  code      String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  city      City @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  
+  @@unique([cityId, code])
+  @@map("pincodes")
+}
+
+// Business Master Data
+model AgentType {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  code        String   @unique
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("agent_types")
+}
+
+model PolicyType {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  code        String   @unique
+  category    String   // 'life', 'health', 'motor', 'general'
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("policy_types")
+}
+
+model UserType {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  code        String   @unique
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("user_types")
+}
+
+model Region {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  code        String   @unique
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("regions")
+}
+
+model Department {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  code        String   @unique
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("departments")
+}
+
+model Status {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  code        String   @unique
+  category    String   // 'customer', 'agent', 'policy', 'claim', 'training'
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("statuses")
+}
+
+model Priority {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  code        String   @unique
+  level       Int      // 1-5 priority level
+  color       String?  // Hex color code
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("priorities")
+}
+
+model TrainingModule {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  code        String   @unique
+  description String?
+  duration    Int      // in minutes
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  topics      TrainingTopic[]
+  
+  @@map("training_modules")
+}
+
+model TrainingTopic {
+  id        String   @id @default(cuid())
+  moduleId  String
+  name      String
+  duration  Int      // in minutes
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  module    TrainingModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  
+  @@unique([moduleId, name])
+  @@map("training_topics")
+}
+
+model ExamType {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  code        String   @unique
+  duration    Int      // in minutes
+  totalMarks  Int
+  passingMarks Int
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("exam_types")
+}
+
+// System Configuration
+model SystemConfig {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  type      String   // 'string', 'number', 'boolean', 'json'
+  category  String   // 'general', 'email', 'sms', 'notification'
+  description String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("system_config")
+}

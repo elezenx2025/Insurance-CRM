@@ -1,0 +1,12 @@
+Customer ID,First Name,Last Name,Customer Type,Email,Phone,Address,City,State,Pincode,PAN,Status,Agent ID,Notes
+CUST-001,John,Doe,Individual,john.doe@email.com,9876543210,123 Main St,Mumbai,Maharashtra,400001,ABCDE1234F,Active,AGT-001,Individual customer
+CUST-002,Jane,Smith,Corporate,jane.smith@company.com,9876543211,456 Business Ave,Pune,Maharashtra,411001,XYZAB5678G,Active,AGT-002,Corporate customer
+CUST-003,Bob,Johnson,Individual,bob.johnson@email.com,9876543212,789 Residential Rd,Bangalore,Karnataka,560001,MNOPQ9012H,Active,AGT-001,Individual customer
+
+
+
+
+
+
+
+
