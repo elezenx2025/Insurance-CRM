@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import jwt from 'jsonwebtoken'
+import * as jose from 'jose'
 
 // Define public routes that don't require authentication
 const publicRoutes = [
@@ -65,16 +65,18 @@ function isCustomerRoute(pathname: string): boolean {
   return customerRoutes.some(route => pathname.startsWith(route))
 }
 
-function verifyToken(token?: string): any {
+async function verifyToken(token?: string): Promise<{ userId?: string; role?: string; email?: string } | null> {
   try {
     if (!token) return null
-    return jwt.verify(token, process.env.JWT_SECRET || 'demo-secret-key')
-  } catch (error) {
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'demo-secret-key')
+    const { payload } = await jose.jwtVerify(token, secret)
+    return payload as { userId?: string; role?: string; email?: string }
+  } catch {
     return null
   }
 }
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   
   console.log(`Middleware: Temporarily allowing all routes for login debugging - ${pathname}`)
@@ -99,8 +101,15 @@ export function middleware(request: NextRequest) {
     }
 
     // Verify admin token
-    const decoded = verifyToken(authToken)
-    if (!decoded || (decoded.role !== 'ADMIN' && decoded.role !== 'AGENT')) {
+    const decoded = await verifyToken(authToken)
+    if (!decoded) {
+      const loginUrl = new URL('/auth/login', request.url)
+      loginUrl.searchParams.set('redirect', pathname)
+      loginUrl.searchParams.set('error', 'unauthorized')
+      return NextResponse.redirect(loginUrl)
+    }
+    const decodedUser = decoded as { userId?: string; role?: string; email?: string }
+    if (decodedUser.role !== 'ADMIN' && decodedUser.role !== 'AGENT') {
       const loginUrl = new URL('/auth/login', request.url)
       loginUrl.searchParams.set('redirect', pathname)
       loginUrl.searchParams.set('error', 'unauthorized')
@@ -108,11 +117,12 @@ export function middleware(request: NextRequest) {
     }
 
     // Add user info to headers for API routes
+    const user = decodedUser
     if (pathname.startsWith('/api/')) {
       const response = NextResponse.next()
-      response.headers.set('x-user-id', decoded.userId)
-      response.headers.set('x-user-role', decoded.role)
-      response.headers.set('x-user-email', decoded.email)
+      response.headers.set('x-user-id', user.userId ?? '')
+      response.headers.set('x-user-role', user.role ?? '')
+      response.headers.set('x-user-email', user.email ?? '')
       return response
     }
 
