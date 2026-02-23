@@ -1074,7 +1074,7 @@ export default function PolicyProposalsPage() {
         insuranceCompany: selectedProposal.selectedQuote?.companyName,
         premiumAmount: selectedProposal.selectedQuote?.totalPremium,
         startDate: new Date().toLocaleDateString(),
-        endDate: new Date(new Date().setFullYear(new Date().getFullYear() + (selectedProposal.policyDetails?.policyTerm || 1))).toLocaleDateString(),
+        endDate: new Date(new Date().setFullYear(new Date().getFullYear() + (Number(selectedProposal.policyDetails?.policyTerm) || 1))).toLocaleDateString(),
         vehicleDetails: {
           oem: selectedProposal.policyDetails?.oem,
           model: selectedProposal.policyDetails?.modelName,
