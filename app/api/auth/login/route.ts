@@ -21,7 +21,9 @@ const DEMO_USER = {
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password } = await request.json()
+    const body = await request.json()
+    const email = String(body?.email || '').trim().toLowerCase()
+    const password = String(body?.password || '').trim()
 
     if (!email || !password) {
       return NextResponse.json(
@@ -32,7 +34,7 @@ export async function POST(request: NextRequest) {
 
     // Demo mode authentication
     if (DEMO_MODE) {
-      // Check demo credentials
+      // Check demo credentials (case-insensitive email)
       if (email === 'admin@insurance.com' && password === 'admin123') {
         // Generate JWT token
         const token = jwt.sign(

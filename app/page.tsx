@@ -1,8 +1,7 @@
-import { redirect } from 'next/navigation'
+import PortalLanding from './portal/page'
 
 export default function HomePage() {
-  // Redirect to portal landing page
-  redirect('/portal')
+  return <PortalLanding />
 }
 
 

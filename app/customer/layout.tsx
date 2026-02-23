@@ -98,7 +98,7 @@ function AuthenticatedCustomerLayout({ children }: { children: React.ReactNode }
               <div className="flex items-center">
                 <Link href="/customer" className="flex items-center">
                   <img
-                    src="/elezenx-logo1.svg"
+                    src="/elezenx-logo.svg"
                     alt="ELEZENX Tech Solutions"
                     className="h-24 w-auto"
                   />

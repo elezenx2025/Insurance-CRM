@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { 
   ShieldCheckIcon, 
@@ -15,8 +16,12 @@ import {
   DocumentTextIcon,
   ExclamationTriangleIcon
 } from '@heroicons/react/24/outline'
+import toast from 'react-hot-toast'
 
 export default function PortalLanding() {
+  const [agentEmail, setAgentEmail] = useState('admin@insurance.com')
+  const [agentPassword, setAgentPassword] = useState('admin123')
+  const [agentLoading, setAgentLoading] = useState(false)
   const features = [
     {
       icon: ShieldCheckIcon,
@@ -75,7 +80,7 @@ export default function PortalLanding() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
               <img
-                src="/elezenx-logo1.svg"
+                src="/elezenx-logo.svg"
                 alt="ELEZENX Tech Solutions"
                 className="h-16 w-auto"
               />
@@ -172,7 +177,7 @@ export default function PortalLanding() {
                 Manage policies, process claims, handle customers, and oversee the entire insurance system.
               </p>
               
-              <div className="space-y-3 mb-8">
+              <div className="space-y-3 mb-6">
                 <div className="flex items-center text-sm text-gray-600">
                   <CheckCircleIcon className="h-4 w-4 text-green-500 mr-2" />
                   Comprehensive dashboard
@@ -191,17 +196,64 @@ export default function PortalLanding() {
                 </div>
               </div>
 
-              <div className="space-y-4">
-                <Link
-                  href="/auth/login"
-                  className="w-full bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center"
+              {/* Inline Agent Login Form */}
+              <form
+                className="space-y-3 mb-4"
+                onSubmit={async (e) => {
+                  e.preventDefault()
+                  setAgentLoading(true)
+                  try {
+                    const res = await fetch('/api/auth/login', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      credentials: 'include',
+                      body: JSON.stringify({ email: agentEmail.trim().toLowerCase(), password: agentPassword }),
+                    })
+                    const data = await res.json().catch(() => ({}))
+                    if (res.ok && data.token) {
+                      localStorage.setItem('authToken', data.token)
+                      localStorage.setItem('user', JSON.stringify(data.user))
+                      document.cookie = `authToken=${data.token}; path=/; max-age=86400; samesite=strict`
+                      toast.success('Login successful!')
+                      window.location.href = '/dashboard'
+                    } else {
+                      toast.error(data?.message || 'Invalid credentials')
+                    }
+                  } catch (err) {
+                    toast.error('Login failed. Check console for details.')
+                    console.error('Login error:', err)
+                  } finally {
+                    setAgentLoading(false)
+                  }
+                }}
+              >
+                <input
+                  type="email"
+                  value={agentEmail}
+                  onChange={(e) => setAgentEmail(e.target.value)}
+                  placeholder="Email"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                  required
+                />
+                <input
+                  type="password"
+                  value={agentPassword}
+                  onChange={(e) => setAgentPassword(e.target.value)}
+                  placeholder="Password"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                  required
+                />
+                <button
+                  type="submit"
+                  disabled={agentLoading}
+                  className="w-full bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 flex items-center justify-center"
                 >
-                  Agent Login
+                  {agentLoading ? 'Signing in...' : 'Agent Login'}
                   <ArrowRightIcon className="h-5 w-5 ml-2" />
-                </Link>
-                <div className="text-sm text-gray-500">
-                  Demo: admin@insurance.com / admin123
-                </div>
+                </button>
+              </form>
+              <div className="text-xs text-gray-500">
+                Demo: admin@insurance.com / admin123
               </div>
             </div>
           </div>
@@ -273,7 +325,7 @@ export default function PortalLanding() {
             <div>
               <div className="flex items-center mb-4">
                 <img
-                  src="/elezenx-logo2.svg"
+                  src="/elezenx-logo.svg"
                   alt="ELEZENX Tech Solutions"
                   className="h-24 w-auto"
                 />

@@ -47,7 +47,11 @@ function LoginContent() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        credentials: 'include',
+        body: JSON.stringify({
+          email: data.email.trim().toLowerCase(),
+          password: data.password,
+        }),
       })
 
       console.log('Login response status:', response.status)
@@ -79,13 +83,18 @@ function LoginContent() {
         }, 500)
         
       } else {
-        const error = await response.json()
-        console.error('Login failed:', error)
-        toast.error(error.message || 'Login failed')
+        let message = 'Login failed'
+        try {
+          const data = await response.json()
+          message = data?.message || message
+        } catch {
+          message = response.status === 500 ? 'Server error. Please try again later.' : 'Login failed'
+        }
+        toast.error(message)
       }
     } catch (error) {
-      console.error('Login error:', error)
-      toast.error('An error occurred during login')
+      const msg = error instanceof Error ? error.message : 'An error occurred during login'
+      toast.error(msg)
     } finally {
       setIsLoading(false)
     }
