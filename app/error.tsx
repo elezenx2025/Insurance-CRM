@@ -3,9 +3,8 @@
 import { useEffect } from 'react'
 
 function getErrorMessage(error: unknown): string {
-  if (error instanceof Error) return error.message
-  if (typeof error === 'object' && error !== null && 'message' in error) {
-    const msg = (error as { message?: unknown }).message
+  if (error && typeof error === 'object' && 'message' in error) {
+    const msg = (error as { message: unknown }).message
     if (typeof msg === 'string') return msg
   }
   if (typeof error === 'string') return error
